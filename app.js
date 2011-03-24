@@ -4,28 +4,60 @@
  * Main app.js
  */
 
-    var http = require('http'),
-        sys = require('sys'),
-        formidable = require('formidable');
 
-    http.createServer(function(request,response){
+ /*
+  * Configuration
+  */
+    
+    var express = require('express'),
+        app = express.createServer();
         
-        console.log(request.url);
+    app.use(express.bodyParser());
+    
+    app.listen(80);
+    console.log('node running');
+
+ /*
+  * URL Routing
+  */
+  
+    app.get('/', function(req, res){
+      // basic url hit
+      res.send('<title>Post Commit Autotag</title>hello world');
+    });
+    
+    app.post('/post-commit-autotag',function(req, res){
         
-        switch(request.url){
-            case '/':
-                response.statusCode = 200;
-                response.end(
-                    '<html>'+
-                    '<head><title>Post Commit Autotag</title></head>'+
-                    '<body><h1>Hello World - waiting for requests</h1></body>'+
-                    '</html>'
-                );
-                break;
-            case '/post-commit-callback':
-                response.statusCode = 200;
-                response.end('at post commit-callback');
-                break;
+        // store the post data as an json object
+        app.data = JSON.parse(req.body.payload);
+        
+        // checks if any issues were closed with these commits
+        if(app.checkIssueClosed()){
+            app.reOpenIssues();
+            app.applyLables();
         }
-	
-	}).listen(80, "50.22.221.90"); //end of createServer()
+        // = JSON.parse(req.body.payload);
+        //console.log(post);        
+    });
+    
+ /*
+  * Utility Functions
+  */
+    
+    app.checkIssueClosed = function(){
+        // check all commits
+        for(i in app.data.commits){
+            
+            // grab any issues that were closed by the comment comment
+            console.log('returned match: '+app.data.commits[i].message.match(/(Fixes|Closes) #(\d+)/i));
+            
+            //if(app.data.commits[i].search(''))
+        }
+        /*for ( var i=0, len = app.data.commits.length; i<len; ++i ){
+            if(app.data.commits)
+        }*/
+        
+        return false;
+    }
+
+// end of app.js
