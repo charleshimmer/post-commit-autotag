@@ -69,7 +69,7 @@
     App.get('/test', function(req, res){
         
         // setup fake issue ids
-        var issues = ['5'];
+        var issues = ['2','3','5'];
         
         // test my API calls
         GitHubIssuesApi.reopen(issues);
