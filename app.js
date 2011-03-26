@@ -1,63 +1,95 @@
-/*
+/**
  * Post Commit Autotag
  *
- * Main app.js
+ * This project is meant to be a Post Recieve Callback URL
+ * for automatically re-opening github issues that were closed
+ * via the comment message (i.e. "Fixes #142 where there was a typo")
+ *
+ * Author: Charles Himmer <charleshimmer@gmail.com>
  */
 
 
- /*
-  * Configuration
-  */
+/**
+ * Load Dependecy Modules
+ */
     
-    var express = require('express'),
-        app = express.createServer();
-        
-    app.use(express.bodyParser());
-    
-    app.listen(80);
-    console.log('node running');
+    var Express         = require('express'),
+        GitHubUtilies   = require('./github/utilities');
+        GitHubIssuesApi = require("./github/api/Issues");
+            
 
- /*
-  * URL Routing
-  */
-  
-    app.get('/', function(req, res){
-      // basic url hit
-      res.send('<title>Post Commit Autotag</title>hello world');
+/**
+ * App Configruation
+ */     
+ 
+    // setup express server
+    var App = Express.createServer();
+    
+    // allow for post body parsing
+    App.use(Express.bodyParser());
+    
+    // Initial GitHubIssuesAPI settings
+    GitHubIssuesApi.initialize({
+        apiKey:'7c5b642b611df260ba81b961382ce716',
+        user:'charleshimmer',
+        repo:'post-commit-autotag'
     });
     
-    app.post('/post-commit-autotag',function(req, res){
-        
-        // store the post data as an json object
-        app.data = JSON.parse(req.body.payload);
-        
-        // checks if any issues were closed with these commits
-        if(app.checkIssueClosed()){
-            app.reOpenIssues();
-            app.applyLables();
-        }
-        // = JSON.parse(req.body.payload);
-        //console.log(post);        
-    });
-    
- /*
-  * Utility Functions
-  */
-    
-    app.checkIssueClosed = function(){
-        // check all commits
-        for(i in app.data.commits){
-            
-            // grab any issues that were closed by the comment comment
-            console.log('returned match: '+app.data.commits[i].message.match(/(Fixes|Closes) #(\d+)/i));
-            
-            //if(app.data.commits[i].search(''))
-        }
-        /*for ( var i=0, len = app.data.commits.length; i<len; ++i ){
-            if(app.data.commits)
-        }*/
-        
-        return false;
-    }
+    // setup port for server to listen on    
+    App.listen(80);
 
-// end of app.js
+/**
+ * URL Routing
+ */
+    
+    /**
+     * Define post request at /post-commit-autotag
+     */
+    App.post('/post-commit-autotag',function(req, res){
+        
+        // get post data
+        var post = JSON.parse(req.body.payload);
+        
+        // get which issues where closed
+        var issues = GitHubUtilies.getClosedIssues(post.commits);
+        
+        // reopen those issues
+        GitHubIssuesApi.reopen(issues);
+
+        // apply labels
+        GitHubIssuesApi.applyLabels(issues, 'Testable');
+        
+    });// end of post('/post-commit-autotag');
+    
+    
+    /**
+     * Run testing suite via the browser.
+     *
+     */
+    App.get('/test', function(req, res){
+        
+        // setup fake issue ids
+        var issues = ['5'];
+        
+        // test my API calls
+        GitHubIssuesApi.reopen(issues);
+        GitHubIssuesApi.applyLabels(issues, 'Testable');
+        
+        // return to the browser with something
+        res.end('<title>Post Commit Autotag</title>Testing suite has been ran.');
+      
+      
+    });// end of get('/test');
+    
+    /**
+     * Define basic get request to server, more for checking that
+     * the server is up.
+     */
+    App.get('/', function(req, res){
+        
+        // basic url hit
+        res.end('<title>Post Commit Autotag</title>Server is waiting for requests...');
+      
+    });// end of get('/');
+    
+// end of app.js 
