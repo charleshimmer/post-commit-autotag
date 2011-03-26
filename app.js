@@ -53,11 +53,11 @@
         // get which issues where closed
         var issues = GitHubUtilies.getClosedIssues(post.commits);
         
-        // reopen those issues
-        GitHubIssuesApi.reopen(issues);
-
         // apply labels
         GitHubIssuesApi.applyLabels(issues, 'Testable');
+        
+        // reopen those issues
+        GitHubIssuesApi.reopen(issues);
         
     });// end of post('/post-commit-autotag');
     
