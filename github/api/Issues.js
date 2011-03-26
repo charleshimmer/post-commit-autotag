@@ -49,7 +49,6 @@
     
     // loop through all issues
     for(i in issues){
-        console.log(this.buildPath('reopen', issues[i]));
         this.request(this.buildPath('reopen', issues[i]));
     }
  
@@ -75,7 +74,7 @@
         }
     };
     
-    console.log(this.options);
+    //console.log(this.options);
     
     // build encoded authoriation header (see http://develop.github.com/p/general.html for details)
     this.options.headers.Authorization = "Basic " + new Buffer(this.config.user + '/token:' + this.config.apiKey, "ascii").toString("base64");
@@ -83,8 +82,8 @@
     
     var req = http.request(this.options, function(res) {
     
-        console.log('STATUS: ' + res.statusCode);
-        console.log('HEADERS: ' + JSON.stringify(res.headers));
+        //console.log('STATUS: ' + res.statusCode);
+        //console.log('HEADERS: ' + JSON.stringify(res.headers));
         
         return (res.statusCode == 200) ? true:false;
     });
