@@ -9,7 +9,7 @@
 This script would then re-open issue #123, and apply a label to that issue, like "Testable" or "Verify" (you choose).  It can also handle multiple issues being fixed in a single commit like this.
 
 <pre><code>
-    git commit -m"Fixes #123, fixes #234, and closes #456 because of typo in url..."
+    git commit -m"Fixes #123, fixes #234, and closes #46 because of typo in url..."
 </code></pre>
 
 
