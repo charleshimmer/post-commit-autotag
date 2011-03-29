@@ -1,5 +1,9 @@
-The purpose of this script is to be a "Post-Receive URL" that reopens any issues that were closed when a commit is made with a comment like "Fixes #242 fixed typo of URL" and applies a label of testable to the issue. 
+<h1>Post Commit Autotag</h1>
 
-I am adding more text so I can practice another commit.
+<p>The purpose of this script (written using Node.js) is to be a "Post-Receive URL" that reopens Git Hub issues that were closed by the commit messsage.  Git Hub automatically closes issues that were refenced in a
+ commit message like this </p>
+<pre><code>
+    git commit -m"Fixes #123, typo in url..."
+</code></pre>
 
-I am adding more text so I have something to commit.
+This script would then re-open issue #123, and apply a label to that issue, like "Testable" or "Verify" (you choose).
