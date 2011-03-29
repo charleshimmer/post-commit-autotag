@@ -23,14 +23,15 @@
     for(i in commits){
 
         // clear out the messageText array
-        var mText = [];
+        var matches = [];
         
         // grab any issues that were closed by the commit message text
-        mText = commits[i].message.match(/(Fixes|Closes) #(\d+)/i);
-                    
-        // was there a closed issue?
-        if(mText != null){
-            issues.push(mText[2]);
+        matches = commits[i].message.match(/(Fixes|Closes) #\d+/gi);
+        
+        // loop through all matches and get the number of the issue
+        for(i=0;i<matches.length;i++){
+            var split = matches[i].split('#');
+            issues.push(split[1]);
         }
     }
 
