@@ -29,11 +29,14 @@
     App.use(Express.bodyParser());
     
     // Initial GitHubIssuesAPI settings
-    GitHubIssuesApi.initialize({
-        apiKey:'7c5b642b611df260ba81b961382ce716',
+    var config = {
+        //apiKey:'7c5b642b611df260ba81b961382ce716',
+        apiKey:'e45866771748f7df1021ecc0236b83ec',
         user:'charleshimmer',
         repo:'post-commit-autotag'
-    });
+    };
+    
+    GitHubIssuesApi.initialize(config);
     
     // setup port for server to listen on    
     App.listen(80);
@@ -50,6 +53,11 @@
         // get post data
         var post = JSON.parse(req.body.payload);
         
+        // security check to make sure we are only working with our repository
+        if(post.repository.name != config.repo){
+            return;
+        }
+        
         // get which issues where closed
         var issues = GitHubUtilies.getClosedIssues(post.commits);
         
@@ -63,10 +71,10 @@
     
     
     /**
-     * Run testing suite via the browser.
+     * Run testing suite for API calls
      *
      */
-    App.get('/test', function(req, res){
+    App.get('/testAPI', function(req, res){
         
         // setup fake issue ids
         var issues = ['2','3','5'];
@@ -76,10 +84,79 @@
         GitHubIssuesApi.applyLabels(issues, 'Testable');
         
         // return to the browser with something
-        res.end('<title>Post Commit Autotag</title>Testing suite has been ran.');
+        res.end('<title>Post Commit Autotag</title>API call testing suite has been ran.');
       
       
-    });// end of get('/test');
+    });// end of get('/testAPI');
+    
+    /**
+     * Run testing suite for getting Closed Issues
+     *
+     */
+    App.get('/testMessage', function(req, res){
+
+        var assert = require('assert');
+        
+        // test data
+        var commits = [{
+            timestamp: '2011-03-26T01:17:16-07:00',
+            distinct: true,
+            url: 'https://github.com/charleshimmer/post-commit-autotag/commit/9049052c4c3f9f8c2ea548c78ecc5344aae24483',
+            message: 'Closes #5 testing',
+            id: '9049052c4c3f9f8c2ea548c78ecc5344aae24483'
+        }];
+        
+        console.log(GitHubUtilies.getClosedIssues(commits));
+        
+        var commits = [{
+            timestamp: '2011-03-26T01:17:16-07:00',
+            distinct: true,
+            url: 'https://github.com/charleshimmer/post-commit-autotag/commit/9049052c4c3f9f8c2ea548c78ecc5344aae24483',
+            message: 'Updated README.md and to test multiple fixes, Fixes #4 Fixes #6',
+            id: '9049052c4c3f9f8c2ea548c78ecc5344aae24483'
+        },{
+            timestamp: '2011-03-26T01:17:16-07:00',
+            distinct: true,
+            url: 'https://github.com/charleshimmer/post-commit-autotag/commit/9049052c4c3f9f8c2ea548c78ecc5344aae24483',
+            message: '=Fixes #42, closes #2 this is some dummy test Closes #2',
+            id: '9049052c4c3f9f8c2ea548c78ecc5344aae24483'
+        }];
+        
+        console.log(GitHubUtilies.getClosedIssues(commits));
+        
+        var commits = [{
+            timestamp: '2011-03-26T01:17:16-07:00',
+            distinct: true,
+            url: 'https://github.com/charleshimmer/post-commit-autotag/commit/9049052c4c3f9f8c2ea548c78ecc5344aae24483',
+            message: 'Updated README.md and to test multiple fixes, Fixes #53 Fixes #15',
+            id: '9049052c4c3f9f8c2ea548c78ecc5344aae24483'
+        },{
+            timestamp: '2011-03-26T01:17:16-07:00',
+            distinct: true,
+            url: 'https://github.com/charleshimmer/post-commit-autotag/commit/9049052c4c3f9f8c2ea548c78ecc5344aae24483',
+            message: '=Fixes #2, closes #53 this is some dummy test Closes #23',
+            id: '9049052c4c3f9f8c2ea548c78ecc5344aae24483'
+        },{
+            timestamp: '2011-03-26T01:17:16-07:00',
+            distinct: true,
+            url: 'https://github.com/charleshimmer/post-commit-autotag/commit/9049052c4c3f9f8c2ea548c78ecc5344aae24483',
+            message: '=Fixes #7, closes #563 this is some dummy test Closes #273',
+            id: '9049052c4c3f9f8c2ea548c78ecc5344aae24483'
+        },{
+            timestamp: '2011-03-26T01:17:16-07:00',
+            distinct: true,
+            url: 'https://github.com/charleshimmer/post-commit-autotag/commit/9049052c4c3f9f8c2ea548c78ecc5344aae24483',
+            message: '=Fixes #23, closes #78 this is some dummy test Closes #84',
+            id: '9049052c4c3f9f8c2ea548c78ecc5344aae24483'
+        }];
+        
+        console.log(GitHubUtilies.getClosedIssues(commits));
+       
+        // return to the browser with something
+        res.end('<title>Post Commit Autotag</title>Capture closed issue testing suite has been ran.');
+      
+      
+    });// end of get('/testAPI');
     
     /**
      * Define basic get request to server, more for checking that
