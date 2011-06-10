@@ -5,7 +5,7 @@
  * for automatically re-opening github issues that were closed
  * via the comment message (i.e. "Fixes #142 where there was a typo")
  *
- * Author: Charles Himmer <charleshimmer@gmail.com>
+ * Author: Charles Himmer 
  */
 
 
@@ -30,8 +30,7 @@
     
     // Initial GitHubIssuesAPI settings
     var config = {
-        //apiKey:'7c5b642b611df260ba81b961382ce716',
-        apiKey:'e45866771748f7df1021ecc0236b83ec',
+        apiKey:'e45866771748f7df1021ecc0236b83ec', // insert working api key, this is a dummy one
         user:'charleshimmer',
         repo:'post-commit-autotag'
     };
